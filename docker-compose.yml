@@ -1,0 +1,34 @@
+services:
+
+  backend:
+    build:
+      context: ./Codice/Backend
+      dockerfile: Dockerfile
+    container_name: ciscusassi-backend
+    # Nessuna porta esposta: raggiungibile solo da frontend nella rete interna
+    volumes:
+      - backend-data:/app/data
+    env_file:
+      - ./Codice/Backend/.env
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./Codice/Ciscusassi
+      dockerfile: Dockerfile
+      args:
+        # Letti dal file .env nella root del progetto (non committare .env nel repo)
+        API_URL: ${API_URL:-https://ciscusassi.diegocorona.ddnsfree.com/api}
+        TOMTOM_API_KEY: ${TOMTOM_API_KEY:-YOUR_TOMTOM_API_KEY}
+        JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change_me_in_production}
+    container_name: ciscusassi-frontend
+    ports:
+      - "47821:80"   # NPM proxya verso la porta 47821 del server
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  backend-data:
+    # Il database SQLite è salvato in:
+    # /var/lib/docker/volumes/<progetto>_backend-data/_data/database.sqlite

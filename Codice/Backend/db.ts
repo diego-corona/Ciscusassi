@@ -2,7 +2,8 @@
 import sqlite3 from 'sqlite3';
 
 // creazione del database e della tabella clienti
-const db = new sqlite3.Database('./database.sqlite', (err) => {
+const DB_PATH = process.env.DB_PATH || './data/database.sqlite';
+const db = new sqlite3.Database(DB_PATH, (err) => {
 	if (err) {
 		console.error('❌ Errore connessione al database:', err.message);
 		return;
