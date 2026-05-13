@@ -2,7 +2,12 @@
 set -e
 
 echo "🔧 Esecuzione migrations..."
-node dist/migrations.js
+if [ ! -f "./data/database.sqlite" ]; then
+    echo "📦 Primo avvio: esecuzione seed..."
+    node dist/migrations.js --seed
+else
+    node dist/migrations.js
+fi
 
 echo "🚀 Avvio server..."
 exec node dist/server.js

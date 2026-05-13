@@ -10,6 +10,13 @@ RUN npm ci
 
 COPY . .
 RUN npx tsc
+# Copia le risorse statiche (immagini, JSON) nella cartella dist mantenendo la struttura
+RUN find . -path ./node_modules -prune -o \( -name "*.jpg" -o -name "*.png" -o -name "*.json" \) -print \
+    | grep -v node_modules \
+    | while read f; do \
+        mkdir -p "dist/$(dirname $f)"; \
+        cp "$f" "dist/$f"; \
+      done
 
 # ---- Stage 2: production image ----
 FROM node:22-bookworm-slim
